@@ -1,12 +1,24 @@
 
-// function to determine if user is attmepting a risky action in game, used to calculate answer in success chart.
+// function to determine if user is attmepting a risky action in game, used to calculate answer in success chart.//
 function riskyActionCheck(){
     riskyAction = prompt(`Are you attempting a 'Risky Action'? Enter 'yes' or 'no'.`).toUpperCase()
 
     if (riskyAction != 'YES' && riskyAction != 'NO'){
         riskyActionCheck();
     }else{
-        return riskyAction
+        return riskyAction;
+    }
+}
+
+
+// function returns string yes or no after checking if model is conmsidered "downed".//
+function downedModelCheck(){
+    downedModel = prompt(`Is the model currently downed? Enter "yes" or no".`).toUpperCase()
+
+    if (downedModel != 'YES' && riskyAction != 'NO'){
+        downedModelCheck();
+    }else{
+        return downedModel;
     }
 }
 
@@ -102,6 +114,96 @@ function roll(){
 
 document.getElementById("tcDice").addEventListener("click", roll);
 
+// injury dice roll//
+
+function injuryRoll(){
+
+    let bloodMarkers = 0
+    let positiveDice = 1;
+    let negativeDice = -1;
+    let bloodbath = false;
+    let downedModel = '';
+    diceRolledArray = [];
+    const D6 = 2;
+
+    
+    // Runs downedModelCheck---//
+    downedModelCheck();
+
+    bloodMarkers += parseInt(prompt("Enter the number of blood markers being used:"))*-1 
+    positiveDice *= parseInt(prompt("Enter the amount of '+DICE':"))
+    negativeDice *= parseInt(prompt("Enter the amount of '-DICE' other than blood markers:"))
+    // prompt("is the model down?")
+
+    
+    let totalExtra = positiveDice + (negativeDice + bloodMarkers);
+    if (Number.isNaN(totalExtra) == true){
+        return(document.getElementById('diceRolled').innerHTML = `Valid input not detected. Please try again.`);
+
+    }
+    
+    extraDice = Math.abs(totalExtra)
+    
+    console.log("+DICE:"+negativeDice)
+    console.log("-Dice:"+positiveDice)
+    console.log(`${extraDice}D6 added to roll.`)
+
+    if (bloodMarkers >=6){
+        bloodbath = true;
+        D6 = 3;
+
+    } else if (downedModel == True && bloodMarkers >= 3){
+            bloodbath = true;
+            D6 = 3;
+    }
+
+    numOfDice = D6 + extraDice;
+
+
+
+    //Roll loop-------------------------------------------------//
+
+    for (i = 0; i < numOfDice; i++){
+        roll = Math.floor(Math.random()*6)+1
+        // console.log(`*Rolls dice*`)
+        console.log(roll)
+        diceRolledArray.push(roll)
+        console.log(diceRolledArray)
+
+        // sorting part-----------------------//
+        diceRolledArray.sort((a,b) => a-b);
+        console.log(diceRolledArray)
+        
+        }
+
+         /*calculates total score for the roll--------------*/ 
+
+    let highestTwo = diceRolledArray[(diceRolledArray.length)-1] + diceRolledArray[(diceRolledArray.length)-2];
+
+    let lowestTwo = diceRolledArray[0]+ diceRolledArray[1];
+
+     /* purpose here is for the program to decide whether to total the two highest, or two lowest numbers
+    depending on if the value from the variable 'total' is positive or negative.*/
+ 
+    // document.getElementById('diceRolled').innerHTML = `Rolling ${numOfDice}D6, you roll a ${diceRolledArray}.`;
+
+    // ^^^^^^^fix line above^^^^^^
+    
+
+    if (totalExtra < 0 ){
+        totalScore = lowestTwo;
+        // console.log(`The lowest two numbers are chosen, your result is: ${totalScore}`);
+        // alert(`The lowest two numbers are chosen, your result is: ${totalScore}.`);
+        document.getElementById('diceResult').innerHTML = `The lowest two numbers are chosen, your result is: ${totalScore}`;
+        
+    } else {
+        totalScore = highestTwo;
+        // console.log(`The highest two numbers are chosen, your result is: ${totalScore}`);
+        // alert(`The highest two numbers are chosen, your result is: ${totalScore}`);
+        document.getElementById('diceResult').innerHTML = `The highest two numbers are chosen, your result is: ${totalScore}`;
+    }
+    
+}
 
 function dTwentyRoller(){
 
@@ -125,3 +227,4 @@ function dTwentyRoller(){
 }
 
 document.getElementById("d20BTN").addEventListener("click", dTwentyRoller);
+
