@@ -15,9 +15,10 @@ function riskyActionCheck(){
 function downedModelCheck(){
     downedModel = prompt(`Is the model currently downed? Enter "yes" or no".`).toUpperCase()
 
-    if (downedModel != 'YES' && riskyAction != 'NO'){
+    if (downedModel != 'YES' && downedModel != 'NO'){
         downedModelCheck();
-    }else{
+    }else if (downedModel == 'YES'){
+        downedModel = true;
         return downedModel;
     }
 }
@@ -114,29 +115,28 @@ function roll(){
 
 document.getElementById("tcDice").addEventListener("click", roll);
 
-// injury dice roll//
 
+// injury dice roll----------------------------------------------------------//
 function injuryRoll(){
 
     let bloodMarkers = 0
     let positiveDice = 1;
     let negativeDice = -1;
-    let bloodbath = false;
     let downedModel = '';
+    bloodbath = false;
     diceRolledArray = [];
-    const D6 = 2;
+    let D6 = 2;
 
     
     // Runs downedModelCheck---//
     downedModelCheck();
 
-    bloodMarkers += parseInt(prompt("Enter the number of blood markers being used:"))*-1 
+    bloodMarkers *= parseInt(prompt("Enter the number of blood markers being used:")) 
     positiveDice *= parseInt(prompt("Enter the amount of '+DICE':"))
     negativeDice *= parseInt(prompt("Enter the amount of '-DICE' other than blood markers:"))
-    // prompt("is the model down?")
 
     
-    let totalExtra = positiveDice + (negativeDice + bloodMarkers);
+    let totalExtra = positiveDice + negativeDice + bloodMarkers;
     if (Number.isNaN(totalExtra) == true){
         return(document.getElementById('diceRolled').innerHTML = `Valid input not detected. Please try again.`);
 
@@ -152,13 +152,14 @@ function injuryRoll(){
         bloodbath = true;
         D6 = 3;
 
-    } else if (downedModel == True && bloodMarkers >= 3){
-            bloodbath = true;
-            D6 = 3;
+    } else if (downedModel == true && bloodMarkers >= 3){
+        bloodbath = true;
+        D6 = 3;
     }
 
     numOfDice = D6 + extraDice;
 
+    console.log(numOfDice)
 
 
     //Roll loop-------------------------------------------------//
@@ -179,31 +180,42 @@ function injuryRoll(){
          /*calculates total score for the roll--------------*/ 
 
     let highestTwo = diceRolledArray[(diceRolledArray.length)-1] + diceRolledArray[(diceRolledArray.length)-2];
-
     let lowestTwo = diceRolledArray[0]+ diceRolledArray[1];
 
      /* purpose here is for the program to decide whether to total the two highest, or two lowest numbers
     depending on if the value from the variable 'total' is positive or negative.*/
  
-    // document.getElementById('diceRolled').innerHTML = `Rolling ${numOfDice}D6, you roll a ${diceRolledArray}.`;
-
-    // ^^^^^^^fix line above^^^^^^
+    document.getElementById('diceRolledInjury').innerHTML = `Rolling ${numOfDice}D6, you roll a ${diceRolledArray}.`;
     
-
     if (totalExtra < 0 ){
         totalScore = lowestTwo;
-        // console.log(`The lowest two numbers are chosen, your result is: ${totalScore}`);
-        // alert(`The lowest two numbers are chosen, your result is: ${totalScore}.`);
-        document.getElementById('diceResult').innerHTML = `The lowest two numbers are chosen, your result is: ${totalScore}`;
+        document.getElementById('diceResultInjury').innerHTML = `The lowest two numbers are chosen, your result is: ${totalScore}`;
         
     } else {
         totalScore = highestTwo;
-        // console.log(`The highest two numbers are chosen, your result is: ${totalScore}`);
-        // alert(`The highest two numbers are chosen, your result is: ${totalScore}`);
-        document.getElementById('diceResult').innerHTML = `The highest two numbers are chosen, your result is: ${totalScore}`;
+        document.getElementById('diceResultInjury').innerHTML = `The highest two numbers are chosen, your result is: ${totalScore}`;
     }
     
+
+    // injury chart ---------------//
+
+    if (totalScore >= 9){
+        document.getElementById('injuryResult').innerHTML = `The model has suffered a grievous injury and is now out of action. Remove the model from the game.`;
+    } else if (totalScore == 8 || totalScore == 7){
+
+         if (downedModel == true){
+                document.getElementById('injuryResult').innerHTML = `Place 2 blood markers next to the model. The model stays down. `
+            } else {
+                document.getElementById('injuryResult').innerHTML = `The model has been downed! Place a blood marker next to it and proceed to place the model on its side. `
+            }
+    } else if (totalScore > 2 && totalScore < 6){
+        document.getElementById('injuryResult').innerHTML = `Minor Hit! - place a blood marker next to the model.`
+    } else {
+        document.getElementById('injuryResult').innerHTML = `No effect - the model suffers no apparent injures.`
+    }
 }
+
+document.getElementById("injuryDice").addEventListener("click", injuryRoll);
 
 function dTwentyRoller(){
 
